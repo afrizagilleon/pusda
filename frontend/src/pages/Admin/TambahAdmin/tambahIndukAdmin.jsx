@@ -18,6 +18,7 @@ export const TambahIndukAdmin = () => {
         large: "",
         asset_value: "",
         item_name: "",
+        upt: params.id
     });
 
     const [message, setMessage] = useState([]);

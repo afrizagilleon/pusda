@@ -65,7 +65,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     // Route::get('/export/data', [ImportExportData::class, 'exportMappingUpt']);
     Route::get('/export/data', [DashboardController::class, 'getDataUPTExport']);
     //  Import File parent
-    Route::post('/import/file/{upt}/parent/', [ImportExportData::class, 'import_parent']);
+    Route::post('/import/file/{upt}/parent/{author}', [ImportExportData::class, 'import_parent']);
     //  Import File parent
     Route::post('/import/file/children/{id}', [ImportExportData::class, 'import_children']);
 

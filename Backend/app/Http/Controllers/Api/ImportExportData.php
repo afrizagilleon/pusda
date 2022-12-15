@@ -40,7 +40,7 @@ class ImportExportData extends Controller
      * )
      */
 
-    public function import_parent(Request $request, $upt)
+    public function import_parent(Request $request, $upt, $author)
     {
         $validation = Validator::make($request->only('file'), [
             'file' => 'required|mimes:csv,xlx,xls,xlsx'
@@ -51,7 +51,7 @@ class ImportExportData extends Controller
         endif;
 
         try {
-            Excel::import(new IndukImport($upt), request()->file('file'));
+            Excel::import(new IndukImport($upt, $author), request()->file('file'));
             return ResponseFormatter::responseSuccessWithData('Data Berhasil di Import');
         } catch (Exception $error) {
             return ResponseFormatter::responseError($error->getMessage(), 400);

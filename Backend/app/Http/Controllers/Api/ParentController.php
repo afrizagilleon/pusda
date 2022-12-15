@@ -106,19 +106,30 @@ class ParentController extends Controller
 
         $columns = \Schema::getColumnListing((new Parents)->getTable());
 
-        $parent = Parents::where(function ($query) {
-            // $query->where('auhtor',  Auth::user()->id); OLD
-            $query->where('auhtor',  Auth::user()->roles()->pluck('id'));
-        })->where(
-            "upt", $upt
-        )->where(function ($query) use ($columns, $keyword) {
-            foreach ($columns as $column) {
-                $query->orWhere($column, 'like', "%{$keyword}%");
-            }
-        })->orderBy('id', 'DESC')->paginate(10);
+        if( Auth::user()->roles()->pluck('id')[0] === 1  ){
+            $parent = Parents::where(
+                "upt", $upt
+            )->where(function ($query) use ($columns, $keyword) {
+                foreach ($columns as $column) {
+                    $query->orWhere($column, 'like', "%{$keyword}%");
+                }
+            })->orderBy('id', 'DESC')->paginate(10);
+            return ResponseFormatter::responseSuccessWithData('Berhasil mendapatkan data tanah induk', $parent);
 
+        }else{
+            $parent = Parents::where(
+                'auhtor',  Auth::user()->roles()->pluck('id')
+            )->where(
+                "upt", $upt
+            )->where(function ($query) use ($columns, $keyword) {
+                foreach ($columns as $column) {
+                    $query->orWhere($column, 'like', "%{$keyword}%");
+                }
+            })->orderBy('id', 'DESC')->paginate(10);
 
-        return ResponseFormatter::responseSuccessWithData('Berhasil mendapatkan data tanah induk', $parent);
+            return ResponseFormatter::responseSuccessWithData('Berhasil mendapatkan data tanah induk', $parent);
+        }
+
     }
 
     /**
@@ -237,13 +248,14 @@ class ParentController extends Controller
      */
     public function createParent(Request $request)
     {
-        $validation = Validator::make($request->only('certificate_number', 'certificate_date', 'item_name', 'address', 'large', 'asset_value'), [
+        $validation = Validator::make($request->only('certificate_number', 'certificate_date', 'item_name', 'address', 'large', 'asset_value', 'upt'), [
             'certificate_number' => 'required|integer',
             'certificate_date' => 'required',
             'item_name' => 'required',
             'address' => 'required',
             'large' => 'required',
-            'asset_value' => 'required'
+            'asset_value' => 'required',
+            'upt' => 'required',
         ]);
 
         if ($validation->fails()) :
@@ -261,6 +273,7 @@ class ParentController extends Controller
                 'address' => $request->address,
                 'large' => $request->large,
                 'asset_value' => $request->asset_value,
+                'upt' => $request->upt,
             ]);
 
             $data = Parents::where('id', $parent->id)->with(['user'])->get();

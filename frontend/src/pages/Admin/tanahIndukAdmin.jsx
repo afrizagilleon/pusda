@@ -16,6 +16,8 @@ export const TanahIndukAdmin = () => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+
+
     //format date into yyyy-mm-dd with leading zero
     const formatDate = (date) => {
         const d = new Date(date);
@@ -54,11 +56,11 @@ export const TanahIndukAdmin = () => {
         const fetchData = async () => {
             let token = localStorage.getItem("token");
             let authorId = localStorage.getItem("active_author_id");
-            const upt = params.id === "pusdajatim" ? 'parent/all' : `parent/${params.id}/all`
+            console.log(authorId)
             try {
                 let res = await fetch(
                     apiUrl +
-                    `${upt}?page=` +
+                    `parent/${params.id}/all?p  age=` +
                     pageNum +
                     "&auhtor=" +
                     authorId +
@@ -119,6 +121,7 @@ export const TanahIndukAdmin = () => {
     };
 
     const importDataTanahInduk = () => {
+
         Swal.fire({
             title: "Import Data",
             text: "Upload file excel",
@@ -133,13 +136,15 @@ export const TanahIndukAdmin = () => {
             confirmButtonText: "Upload",
             showLoaderOnConfirm: true,
             preConfirm: (file) => {
+                let authorId = localStorage.getItem("active_author_id")
+
                 let token = localStorage.getItem("token");
                 let formData = new FormData();
                 formData.append("file", file);
                 formData.append("token", token);
                 console.log(formData.get(file)  )
 
-                return fetch(apiUrl + `import/file/${params.id}/parent/`, {
+                return fetch(apiUrl + `import/file/${params.id}/parent/${authorId}`, {
                     method: "POST",
                     body: formData,
                 }).then((response) => {

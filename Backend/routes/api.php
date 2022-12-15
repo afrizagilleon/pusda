@@ -40,6 +40,11 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 
     Route::get('/admin/role', [AuthenticationController::class, 'getRole']);
 
+    Route::post('/tumbalGambar', function (){
+//        $hehe = $_POST['gambar'];
+        echo "mantap";
+    });
+
     // Add user access
     Route::post('/admin/add/user', [AuthenticationController::class, 'addUser']);
     Route::get('/admin/edit/user/{id}', [AuthenticationController::class, 'editUser']);

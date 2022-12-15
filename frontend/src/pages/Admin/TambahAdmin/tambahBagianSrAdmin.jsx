@@ -97,7 +97,8 @@ export const TambahBagianSrAdmin = () => {
         xhr.addEventListener("load", SuccessHandler, false);
         xhr.addEventListener("error", ErrorHandler, false);
         xhr.addEventListener("abort", AbortHandler, false);
-        xhr.open("POST", "fileupload.php");
+        xhr.open("POST", apiUrl + "tumbalGambar");
+        xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem("token"))
         xhr.send(formData);
     };
 
@@ -105,19 +106,19 @@ export const TambahBagianSrAdmin = () => {
         loadTotalRef.current.innerHTML = `${uploadRef.current.files[0].name} uploaded ${Math.round(e.loaded/1024)}K bytes of ${Math.round(e.total/1024)}K    bytes`;
         var percent = (e.loaded / e.total) * 100;
         progressRef.current.value = Math.round(percent);
-        statusRef.current.innerHTML = Math.round(percent) + "% uploaded...";
+        // statusRef.current.innerHTML = Math.round(percent) + "% uploaded...";
     };
 
     const SuccessHandler = (e) => {
-        statusRef.current.innerHTML = e.target.responseText;
-        progressRef.current.value = 0;
+        // statusRef.current.innerHTML = e.target.responseText;
+        progressRef.current.value = 100;
     };
 
     const ErrorHandler = () => {
-        statusRef.current.innerHTML = "upload failed!!";
+        // statusRef.current.innerHTML = "upload failed!!";
     };
     const AbortHandler = () => {
-        statusRef.current.innerHTML = "upload aborted!!";
+        // statusRef.current.innerHTML = "upload aborted!!";
     };
 
     /* 2222 */
@@ -128,8 +129,8 @@ export const TambahBagianSrAdmin = () => {
     const progressRef2 = useRef();
 
     const UploadFile2 = () => {
-        const file = uploadRef2.current.files[0];
-        setFile2(URL.createObjectURL(file));
+        const file2 = uploadRef2.current.files[0];
+        setFile2(URL.createObjectURL(file2));
         var formData = new FormData();
         formData.append("image", file2);
         var xhr = new XMLHttpRequest();
@@ -137,7 +138,8 @@ export const TambahBagianSrAdmin = () => {
         xhr.addEventListener("load", SuccessHandler2, false);
         xhr.addEventListener("error", ErrorHandler2, false);
         xhr.addEventListener("abort", AbortHandler2, false);
-        xhr.open("POST", "fileupload.php");
+        xhr.open("POST", apiUrl + "tumbalGambar");
+        xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem("token"))
         xhr.send(formData);
     };
 
@@ -145,19 +147,19 @@ export const TambahBagianSrAdmin = () => {
         loadTotalRef2.current.innerHTML = `${uploadRef2.current.files[0].name} uploaded ${e.loaded} bytes of ${e.total} bytes`;
         var percent = (e.loaded / e.total) * 100;
         progressRef2.current.value = Math.round(percent);
-        statusRef2.current.innerHTML = Math.round(percent) + "% uploaded...";
+        // statusRef2.placeholder = Math.round(percent) + "% uploaded...";
     };
 
     const SuccessHandler2 = (e) => {
         // statusRef2.current.innerHTML = e.target.responseText;
-        progressRef2.current.value = 0;
+        progressRef2.current.value = 100;
     };
 
     const ErrorHandler2 = () => {
-        statusRef2.current.innerHTML = "upload failed!!";
+        // statusRef2.current.innerHTML = "upload failed!!";
     };
     const AbortHandler2 = () => {
-        statusRef2.current.innerHTML = "upload aborted!!";
+        // statusRef2.current.innerHTML = "upload aborted!!";
     };
 
   return (
@@ -431,6 +433,7 @@ export const TambahBagianSrAdmin = () => {
                 }
                 }
               />
+                <progress style={{width : '100%'}} ref={progressRef} max={100}></progress>
                 <p ref={loadTotalRef}></p>
             </div>
             <div className="d-flex flex-col">
@@ -463,6 +466,7 @@ export const TambahBagianSrAdmin = () => {
                 }
                 }
               />
+                <progress style={{width: '100%'}} ref={progressRef2} max={100} ></progress>
                 <p ref={loadTotalRef2}></p>
             </div>
           </div>

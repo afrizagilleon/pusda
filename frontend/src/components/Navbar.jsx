@@ -15,6 +15,8 @@ export const Navbar = () => {
     localStorage.removeItem("user_id");
     localStorage.removeItem("user_name");
     localStorage.removeItem("token");
+    localStorage.removeItem("password");
+    localStorage.removeItem("email");
     navigate("/");
   };
 

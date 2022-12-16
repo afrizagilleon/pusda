@@ -68,16 +68,17 @@ class AuthenticationController extends Controller
         */
     public function login(Request $request)
     {
+
+
         $credentials = $request->only('email', 'password');
         $validator = Validator::make($credentials, [
             'email' => 'required|email',
-            'password' => 'required|string|min:8|max:50'
+            'password' => 'required|string|min:8'
         ]);
 
         if ($validator->fails()) {
             return ResponseFormatter::responseValidation($validator->errors());
         }
-
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json([
@@ -99,6 +100,7 @@ class AuthenticationController extends Controller
             'token' => $token,
             'user' => array_merge($user->toArray(),
             ['roles' => $user->roles()->get()->toArray()]),
+            'password' => $user->getAuthPassword()
 
         ]);
 

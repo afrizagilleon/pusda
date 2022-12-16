@@ -55,6 +55,8 @@ export const LoginForm = () => {
       } else {
         // Check roles
         localStorage.setItem('user_id', resJson.user.id);
+        localStorage.setItem('email', resJson.user.email);
+        localStorage.setItem('password', input.password);
         localStorage.setItem('user_name', resJson.user.name);
         localStorage.setItem('user_slug', resJson.user.slug);
         localStorage.setItem('token', resJson.token);

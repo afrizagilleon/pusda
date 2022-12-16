@@ -6,6 +6,7 @@ import { ModalPembayaranEdit } from "../../components/Modal/ModalPembayaranEdit"
 import { ButtonDelete } from "../../components/Button/ButtonDelete";
 import { TablePembayaran } from "../../components/Table/TablePembayaran";
 import ReactPaginate from "react-paginate";
+import Swal from "sweetalert2";
 
 export const DetailBagianSrUPT = () => {
     const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -118,7 +119,10 @@ export const DetailBagianSrUPT = () => {
                 );
 
                 let resData = resJson.data.data;
-                if (resData.length == 0) return setEmptyMsg("Tidak ada data");
+                if (resData.length === 0) {
+                    setTimeout(()=> Swal.close(), 300)
+                    return setEmptyMsg("Tidak ada data");
+                }
 
                 setEmptyMsg("");
 
@@ -127,7 +131,15 @@ export const DetailBagianSrUPT = () => {
                 console.log(error);
             }
         };
-
+        Swal.fire({
+            title: "Memuat Data",
+            text : 'Mengambil dan memuat data',
+            allowEscapeKey : false,
+            allowOutsideClick: false,
+            didOpen(popup) {
+                Swal.showLoading()
+            }
+        });
         fetchChildren().catch(console.error);
         fetchPayment().catch(console.error);
     }, [triggerDeleted, pageNum]);
@@ -320,6 +332,9 @@ export const DetailBagianSrUPT = () => {
                     <div className="table-informasi-pembayaran">
                         {emptyMsg === "" ? (
                             payment.map((item, key) => {
+                                if(key+1 === payment.length){
+                                    setTimeout(()=> Swal.close(), 500)
+                                }
                                 return (
                                     <TablePembayaran
                                         iterator={startingPoint + key}

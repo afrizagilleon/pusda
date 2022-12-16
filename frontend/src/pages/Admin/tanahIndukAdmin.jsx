@@ -51,64 +51,79 @@ export const TanahIndukAdmin = () => {
         luas: "",
     });
 
+    const fetchData = async () => {
+
+        let token = localStorage.getItem("token");
+        let authorId = localStorage.getItem("active_author_id");
+        try {
+            let res = await fetch(
+                apiUrl +
+                `parent/${params.id}/all?p  age=` +
+                pageNum +
+                "&auhtor=" +
+                authorId +
+                "&keyword=" +
+                search,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8",
+                        Authorization: "Bearer " + token,
+                    },
+                }
+            );
+
+            let resJson = await res.json();
+
+            if (res.status != 200) {
+                return console.log(resJson.message);
+            }
+
+            // Check if result is from search
+            if (Array.isArray(resJson.data)) {
+                setPageCount(1);
+                setStartingPoint(1);
+            } else {
+                setPageCount(resJson.data.last_page);
+                setStartingPoint(
+                    resJson.data.per_page * resJson.data.current_page -
+                    (resJson.data.per_page - 1)
+                );
+            }
+
+            let resData = Array.isArray(resJson.data)
+                ? resJson.data
+                : resJson.data.data;
+            if (resData.length === 0) {
+                setTimeout(()=>Swal.close(), 200)
+                return setEmptyMsg("Tidak ada data.");
+            }
+
+            setEmptyMsg("");
+            setData(resData);
+        } catch (error) {
+            console.log(error);
+            window.location = '/'
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            let token = localStorage.getItem("token");
-            let authorId = localStorage.getItem("active_author_id");
-            console.log(authorId)
-            try {
-                let res = await fetch(
-                    apiUrl +
-                    `parent/${params.id}/all?p  age=` +
-                    pageNum +
-                    "&auhtor=" +
-                    authorId +
-                    "&keyword=" +
-                    search,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-type": "application/json; charset=UTF-8",
-                            Authorization: "Bearer " + token,
-                        },
-                    }
-                );
-
-                let resJson = await res.json();
-
-                if (res.status != 200) {
-                    return console.log(resJson.message);
-                }
-
-                // Check if result is from search
-                if (Array.isArray(resJson.data)) {
-                    setPageCount(1);
-                    setStartingPoint(1);
-                } else {
-                    setPageCount(resJson.data.last_page);
-                    setStartingPoint(
-                        resJson.data.per_page * resJson.data.current_page -
-                        (resJson.data.per_page - 1)
-                    );
-                }
-
-                let resData = Array.isArray(resJson.data)
-                    ? resJson.data
-                    : resJson.data.data;
-                if (resData.length == 0) {
-                    return setEmptyMsg("Tidak ada data.");
-                }
-
-                setEmptyMsg("");
-                setData(resData);
-            } catch (error) {
-                console.log(error);
+        Swal.fire({
+            title: "Memuat Data",
+            text : 'Mengambil dan memuat data',
+            allowEscapeKey : false,
+            allowOutsideClick: false,
+            didOpen(popup) {
+                Swal.showLoading()
             }
-        };
-
-        fetchData().catch(console.error);
+        });
+        fetchData().catch(console.error)
     }, [params.id, triggerDeleted, pageNum, search]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // useEffect(()=>{
+    //
+    // },[data])
+
 
     const toggleEditTanah = () => {
         if (openEditTanah) {
@@ -214,6 +229,9 @@ export const TanahIndukAdmin = () => {
                             {emptyMsg == "" ? (
                                 <>
                                     {data.map((item, key) => {
+                                        if(key+1 === data.length){
+                                            setTimeout(()=>Swal.close(), 500)
+                                        }
                                         return (
                                             <IndukTableRowAdmin
                                                 iterator={startingPoint + key}

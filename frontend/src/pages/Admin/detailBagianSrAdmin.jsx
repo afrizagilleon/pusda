@@ -6,6 +6,7 @@ import { ModalPembayaranEdit } from "../../components/Modal/ModalPembayaranEdit"
 import { ButtonDelete } from "../../components/Button/ButtonDelete";
 import { TablePembayaran } from "../../components/Table/TablePembayaran";
 import ReactPaginate from "react-paginate";
+import Swal from "sweetalert2";
 
 export const DetailBagianSrAdmin = () => {
     const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -107,7 +108,7 @@ export const DetailBagianSrAdmin = () => {
 
                 let resJson = await res.json();
 
-                if (res.status != 200) {
+                if (res.status !== 200) {
                     return console.log(resJson.message);
                 }
 
@@ -118,7 +119,10 @@ export const DetailBagianSrAdmin = () => {
                 );
 
                 let resData = resJson.data.data;
-                if (resData.length == 0) return setEmptyMsg("Tidak ada data");
+                if (resData.length === 0) {
+                    setTimeout(()=> Swal.close())
+                    return setEmptyMsg("Tidak ada data");
+                }
 
                 setEmptyMsg("");
 
@@ -127,6 +131,16 @@ export const DetailBagianSrAdmin = () => {
                 console.log(error);
             }
         };
+
+        Swal.fire({
+            title: "Memuat Data",
+            text : 'Mengambil dan memuat data',
+            allowEscapeKey : false,
+            allowOutsideClick: false,
+            didOpen(popup) {
+                Swal.showLoading()
+            }
+        });
 
         fetchChildren().catch(console.error);
         fetchPayment().catch(console.error);
@@ -320,6 +334,9 @@ export const DetailBagianSrAdmin = () => {
                     <div className="table-informasi-pembayaran">
                         {emptyMsg === "" ? (
                             payment.map((item, key) => {
+                                if(key+1 === payment.length){
+                                    setTimeout(()=> Swal.close(), 500)
+                                }
                                 return (
                                     <TablePembayaran
                                         iterator={startingPoint + key}

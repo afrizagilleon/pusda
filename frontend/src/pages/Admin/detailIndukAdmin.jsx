@@ -111,7 +111,9 @@ export const DetailIndukAdmin = ({ induk_id }) => {
                 }
 
                 let resData = Array.isArray(resJson.data) ? resJson.data : resJson.data.data;
-                if (resData.length == 0) return setEmptyMsg("Tidak ada data");
+                if (resData.length === 0){
+                    setTimeout(()=>Swal.close(), 500)
+                };
 
                 setEmptyMsg("");
 
@@ -120,6 +122,16 @@ export const DetailIndukAdmin = ({ induk_id }) => {
                 console.log(error);
             }
         };
+
+        Swal.fire({
+            title: "Memuat Data",
+            text : 'Mengambil dan memuat data',
+            allowEscapeKey : false,
+            allowOutsideClick: false,
+            didOpen(popup) {
+                Swal.showLoading()
+            }
+        });
 
         fetchInduk().catch(console.error);
         fetchChildren().catch(console.error);
@@ -314,10 +326,13 @@ export const DetailIndukAdmin = ({ induk_id }) => {
                     <div className="table-tanah-bagian">
                         {emptyMsg === "" ? (
                             children.map((item, key) => {
+                                if(key+1 === children.length){
+                                    setTimeout(()=>Swal.close(), 500)
+                                }
                                 if (
-                                    item.utilization_engagement_type ==
+                                    item.utilization_engagement_type ===
                                     "pinjam_pakai" ||
-                                    item.utilization_engagement_type ==
+                                    item.utilization_engagement_type ===
                                     "pakai_sendiri"
                                 ) {
                                     return (
@@ -325,12 +340,13 @@ export const DetailIndukAdmin = ({ induk_id }) => {
                                             iterator={startingPoint + key}
                                             upt={params.id}
                                             children={item}
+                                            key={key}
                                         />
                                     );
                                 } else if (
-                                    item.utilization_engagement_type ==
+                                    item.utilization_engagement_type ===
                                     "sewa_sip_bmd" ||
-                                    item.utilization_engagement_type ==
+                                    item.utilization_engagement_type ===
                                     "retribusi"
                                 ) {
                                     return (
@@ -338,6 +354,7 @@ export const DetailIndukAdmin = ({ induk_id }) => {
                                             iterator={startingPoint + key}
                                             upt={params.id}
                                             children={item}
+                                            key={key}
                                         />
                                     );
                                 }

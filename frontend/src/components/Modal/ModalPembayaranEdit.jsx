@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 
@@ -6,6 +6,47 @@ import Swal from "sweetalert2";
 
 export const ModalPembayaranEdit = ({ showEdit, handleCloseEdit, parentPayment, setParentPayment, paymentEdit, setPaymentEdit }) => {
     const apiUrl = process.env.REACT_APP_API_URL;
+
+    const [file, setFile] = useState();
+    const uploadRef = useRef();
+    const statusRef = useRef();
+    const loadTotalRef = useRef();
+    const progressRef = useRef();
+
+    const UploadFile = () => {
+        const file = uploadRef.current.files[0];
+        setFile(URL.createObjectURL(file));
+        var formData = new FormData();
+        formData.append("image", file);
+        var xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener("progress", ProgressHandler, false);
+        xhr.addEventListener("load", SuccessHandler, false);
+        xhr.addEventListener("error", ErrorHandler, false);
+        xhr.addEventListener("abort", AbortHandler, false);
+        xhr.open("POST", apiUrl + "tumbalGambar");
+        xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem("token"))
+        xhr.send(formData);
+    };
+
+    const ProgressHandler = (e) => {
+        loadTotalRef.current.innerHTML = `${uploadRef.current.files[0].name} uploaded ${Math.round(e.loaded/1024)}K bytes of ${Math.round(e.total/1024)}K    bytes`;
+        var percent = (e.loaded / e.total) * 100;
+        progressRef.current.value = Math.round(percent);
+        // statusRef.current.innerHTML = Math.round(percent) + "% uploaded...";
+    };
+
+    const SuccessHandler = (e) => {
+        // statusRef.current.innerHTML = e.target.responseText;
+        progressRef.current.value = 100;
+    };
+
+    const ErrorHandler = () => {
+        // statusRef.current.innerHTML = "upload failed!!";
+    };
+    const AbortHandler = () => {
+        // statusRef.current.innerHTML = "upload aborted!!";
+    };
+
 
     const [message, setMessage] = useState([]);
 
@@ -153,14 +194,20 @@ export const ModalPembayaranEdit = ({ showEdit, handleCloseEdit, parentPayment, 
                             <input
                                 type="file"
                                 className="d-none"
+                                ref={uploadRef}
                                 id="surat-permohonan"
                                 onChange={(e) =>
+                                {
                                     setPaymentEdit({
                                         ...paymentEdit,
                                         proof_of_payment: e.target.files[0],
                                     })
+                                    UploadFile()
+                                }
                                 }
                             />
+                            <progress max={100} ref={progressRef} style={{width: '100%'}}></progress>
+                            <p ref={loadTotalRef}></p>
                         </div>
                     </form>
                 </Modal.Body>

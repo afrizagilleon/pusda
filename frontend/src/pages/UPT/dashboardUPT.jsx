@@ -3,6 +3,7 @@ import { DashboardTableRow } from "../../components/Dashboard/DashboardTableRow"
 import LayoutUPT from "../../components/Layout/layoutUPT";
 
 import { ExportExcel } from "../../components/ExportExcel";
+import Swal from "sweetalert2";
 
 export const DashboardUPT = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -96,7 +97,17 @@ export const DashboardUPT = () => {
             }
         };
 
+        Swal.fire({
+            icon: "info",
+            title: "LOADING...",
+            text: "sedang memuat data",
+            // text: messageList,
+            // timer: 1000,
+        });
         fetchData().catch(console.error);
+        if(dashboardData.length === 1){
+            setTimeout(()=> Swal.close(), 500)
+        }
         getExportData().catch(console.error);
     }, [filterYear]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -163,7 +174,10 @@ export const DashboardUPT = () => {
                     </div>
                     {emptyMsg === "" ? (
                         <>
-                            {dashboardData.map((item) => {
+                            {dashboardData.map((item, index) => {
+                                if(index+1 === dashboardData.length){
+                                    setTimeout(()=> Swal.close(), 500)
+                                }
                                 return (
                                     <DashboardTableRow
                                         title={userName}
